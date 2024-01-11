@@ -29,9 +29,9 @@ def rPos(lista, b):
 def getCM(security, date):
     # 函数返回2个值，第一个值是筹码分布的数组，第一列是价格，第二列是筹码百分数（单位：%），第二个值是当前的获利筹码比例（单位：%）
     daynum = 30
-    days = get_trade_days(end_date=date, count=daynum)
+
     df = get_price(security, end_date=date, frequency='1d', fields=['close'], count=daynum)["close"]
-    tr = get_fundamentals_continuously(query(valuation.turnover_ratio).filter(valuation.code.in_([security])), \
+    tr = get_fundamentals_continuously(query(valuation.turnover_ratio).filter(valuation.code.in_([security])),
                                        end_date=date, count=daynum, panel=False)['turnover_ratio']
 
     data = []
@@ -85,8 +85,8 @@ def rateCM(security, date):
 # Function to calculate rateCM for the last 30 days
 def calculate_rateCM_30_days(security, end_date):
     # Create a date range for the last 30 days
-    start_date = end_date - timedelta(days=29)
-    date_range = pd.date_range(start=start_date, end=end_date)
+    # start_date = end_date - timedelta(days=29)
+    date_range = get_trade_days(start_date=None, end_date=end_date, count=30)
 
     # Calculate rateCM for each date in the date range
     data = {'Date': date_range, 'RateCM': [rateCM(security, date) for date in date_range]}
