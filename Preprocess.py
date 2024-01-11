@@ -60,9 +60,10 @@ def getCM(security, date):
 
 
 # 筹码集中度函数返回当前价位上下浮动20% 区间筹码集中度，例如：0.34
-def rateCM(security):
+def rateCM(security, date):
     score = 0
-    current_date = datetime.now().date() - timedelta(days=1)
+    #current_date = datetime.now().date() - timedelta(days=1)
+    current_date = date
     df = get_price(security, end_date=current_date, frequency='daily',
                    fields=None, skip_paused=False,
                    fq='pre', count=1, panel=True, fill_paused=True)
@@ -80,6 +81,21 @@ def rateCM(security):
         if lb <= CM_price[i][0] and CM_price[i][0] <= ub:
             total_percent += (CM_price[i][1] * 0.01)
     return total_percent
+
+# Function to calculate rateCM for the last 30 days
+def calculate_rateCM_30_days(security, end_date):
+    # Create a date range for the last 30 days
+    start_date = end_date - timedelta(days=29)
+    date_range = pd.date_range(start=start_date, end=end_date)
+
+    # Calculate rateCM for each date in the date range
+    data = {'Date': date_range, 'RateCM': [rateCM(security, date) for date in date_range]}
+
+    # Create a dataframe from the calculated data
+    df = pd.DataFrame(data)
+
+    return df
+
 
 # 1-3 turn over ratio, return df of 30 days
 def get_turnover(security, date):
