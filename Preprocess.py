@@ -109,4 +109,16 @@ def get_vwap(security, date):
 
     return 0
 
+## get the return rate
+
+def return_rate(df):
+    X = df.loc['close']
+    X_0 = X[:-1]
+    X_1 = X[1:]
+    returnrate = (X_1-X_0)/X_0
+    df_new = df.drop(df.colums[[0]], axis = 1)
+    df_new.loc['return1'] = returnrate
+    return df_new
+
+
 
