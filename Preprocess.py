@@ -1,8 +1,11 @@
+from typing import List, Any
+
 from jqdatasdk import *
 import numpy as np
 import pandas as pd
 from datetime import time,datetime,timedelta
 from jqdatasdk.alpha191 import *
+from pandas_market_calendars import get_calendar
 
 auth('18813155136','AlphaNet666')
 
@@ -138,6 +141,23 @@ def combine930matrix(date):
     df['turnover'] = pd.Series(df3).values
     #df['return1'] = df4['return1']
     return df.T
+
+#generate input matrix of 1 year
+def inputmatrix():
+    # Define the financial market calendar (e.g., NYSE)
+    calendar = get_calendar('XSHG')
+    # Set the end date as the current date
+    end_date = pd.Timestamp.now(tz='UTC')
+    # Calculate the start date as 1 year ago from the end date
+    start_date = end_date - pd.DateOffset(years=1)
+    # Get the trading days within the specified date range
+    trading_days = calendar.sessions_in_range(start_date, end_date)
+    # Filter trading days with at least 2 days in between
+    filtered_trading_days = [day for i, day in enumerate(trading_days[:-2]) if (trading_days[i + 2] - day).days >= 2]
+    list_of_dfs = []
+    for date in filtered_trading_days:
+        list_of_dfs = list_of_dfs + [combine930matrix(date)]
+    return list_of_dfs
 
 if __name__ == "__main__":
     count = get_query_count()
