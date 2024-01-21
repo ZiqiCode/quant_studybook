@@ -104,8 +104,28 @@ def get_turnover(security, date):
     return tr
 
 
+<<<<<<< HEAD
 def get_return1(security, date):
     a = get_price(security, count = 30, end_date=date, frequency='daily',
                fields=['open', 'close', 'low', 'high', 'volume'],
                skip_paused=True, fq='none',  panel=False, fill_paused=True)
+=======
+# 1-4 get vwap
+def get_vwap(security, date):
+
+    return 0
+
+## get the return rate
+
+def return_rate(df):
+    X = df.loc['close']
+    X_0 = X[:-1]
+    X_1 = X[1:]
+    returnrate = (X_1-X_0)/X_0
+    df_new = df.drop(df.colums[[0]], axis = 1)
+    df_new.loc['return1'] = returnrate
+    return df_new
+
+
+>>>>>>> e381744f81365cfcb0d17904698dbae7ec63fb93
 
