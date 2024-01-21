@@ -104,9 +104,8 @@ def get_turnover(security, date):
     return tr
 
 
-# 1-4 get vwap
-def get_vwap(security, date):
-
-    return 0
-
+def get_return1(security, date):
+    a = get_price(security, count = 30, end_date=date, frequency='daily',
+               fields=['open', 'close', 'low', 'high', 'volume'],
+               skip_paused=True, fq='none',  panel=False, fill_paused=True)
 
