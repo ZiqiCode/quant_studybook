@@ -121,10 +121,8 @@ def get_return10(security, date):
 def get_return1(df):
     X = df.loc['close']
     X_0 = X[:-1].values.tolist()
-    print(X_0)
     X_1 = X[1:].values.tolist()
     returnrate = [(X_1[i]-X_0[i])/X_0[i] for i in range(len(X_0))]
-    print(returnrate)
     df_new = df.drop(df.columns[[0]], axis = 1)
     df_new.loc['return1'] = returnrate
     return df_new
@@ -133,34 +131,30 @@ def get_return1(df):
 #combine to form a matrix of 9*30
 def combine930matrix(date):
     df = getfundamental(security,date)
-    df2 = calculate_rateCM_30_days(security,date)
+    #df2 = calculate_rateCM_30_days(security,date)
     df3 = get_turnover(security, date)
 
-    df['RateCM'] = df2['RateCM']
+    #df['RateCM'] = df2['RateCM']
     df['turnover'] = pd.Series(df3).values
     df = df.T
     df = get_return1(df)
     return df
 
 #generate input matrix of 1 year
-def inputmatrix():
-    # Define the financial market calendar (e.g., NYSE)
-    calendar = get_calendar('XSHG')
-    # Set the end date as the current date
-    end_date = pd.Timestamp.now(tz='UTC')
-    # Calculate the start date as 1 year ago from the end date
-    start_date = end_date - pd.DateOffset(years=1)
+def inputmatrix(date):
+
     # Get the trading days within the specified date range
-    trading_days = calendar.sessions_in_range(start_date, end_date)
+    trading_days = get_trade_days(end_date=date, count=200)
     # Filter trading days with at least 2 days in between
     filtered_trading_days = [day for i, day in enumerate(trading_days[:-2]) if (trading_days[i + 2] - day).days >= 2]
     list_of_dfs = []
-    for date in filtered_trading_days:
-        list_of_dfs = list_of_dfs + [combine930matrix(date)]
+    for j in filtered_trading_days:
+        list_of_dfs = list_of_dfs + [combine930matrix(j)]
     return list_of_dfs
 
 if __name__ == "__main__":
     count = get_query_count()
     print(count)
     print("HelloWorld!")
-    print(combine930matrix('2023-1-10'))
+    #print(combine930matrix('2023-1-10'))
+    list_of_dfs = inputmatrix('2023-10-20')
