@@ -9,10 +9,10 @@ auth('18813155136','AlphaNet666')
 security = '601127.XSHG'
 
 
-# 1-1 get fundamental data, 'open', 'close', 'low', 'high', 'volume', return df of 30 days
+# 1-1 get fundamental data, 'open', 'close', 'low', 'high', 'volume','avg, return df of 30 days
 def getfundamental(security, date):
     df = get_price(security, count = 30, end_date=date, frequency='daily',
-               fields=['open', 'close', 'low', 'high', 'volume'],
+               fields=['open', 'close', 'low', 'high', 'volume', 'avg'],
                skip_paused=True, fq='none',  panel=False, fill_paused=True)
 
     return df
@@ -31,8 +31,8 @@ def getCM(security, date):
     daynum = 30
 
     df = get_price(security, end_date=date, frequency='1d', fields=['close'], count=daynum)["close"]
-    tr = get_fundamentals_continuously(query(valuation.turnover_ratio).filter(valuation.code.in_([security])),
-                                       end_date=date, count=daynum, panel=False)['turnover_ratio']
+    query_filter = query(valuation.turnover_ratio).filter(valuation.code.in_([security]))
+    tr = get_fundamentals_continuously(query_filter, end_date=date, count=30, panel=False)['turnover_ratio']
 
     data = []
     data.append([df[0], 100])
@@ -99,25 +99,23 @@ def calculate_rateCM_30_days(security, end_date):
 
 # 1-3 turn over ratio, return df of 30 days
 def get_turnover(security, date):
-    tr = get_fundamentals_continuously(query(valuation.turnover_ratio).filter(valuation.code.in_(security)),
-                                   end_date=date, count=30, panel=False)['turnover_ratio']
+    query_filter = query(valuation.turnover_ratio).filter(valuation.code.in_([security]))
+    tr = get_fundamentals_continuously(query_filter, end_date=date, count=30, panel=False)['turnover_ratio']
     return tr
 
 
-<<<<<<< HEAD
-def get_return1(security, date):
+
+#get 10days return
+def get_return10(security, date):
     a = get_price(security, count = 30, end_date=date, frequency='daily',
                fields=['open', 'close', 'low', 'high', 'volume'],
                skip_paused=True, fq='none',  panel=False, fill_paused=True)
-=======
-# 1-4 get vwap
-def get_vwap(security, date):
 
-    return 0
+
 
 ## get the return rate
 
-def return_rate(df):
+def get_return1(df):
     X = df.loc['close']
     X_0 = X[:-1]
     X_1 = X[1:]
@@ -127,5 +125,22 @@ def return_rate(df):
     return df_new
 
 
->>>>>>> e381744f81365cfcb0d17904698dbae7ec63fb93
 
+
+#combine to form a matrix of 9*30
+def combine930matrix(date):
+    df = getfundamental(security,date)
+    df2 = calculate_rateCM_30_days(security,date)
+    df3 = get_turnover(security, date)
+    #df4 = get_return1(df)
+
+    df['RateCM'] = df2['RateCM']
+    df['turnover'] = pd.Series(df3).values
+    #df['return1'] = df4['return1']
+    return df.T
+
+if __name__ == "__main__":
+    count = get_query_count()
+    print(count)
+    print("HelloWorld!")
+    print(combine930matrix('2023-1-10'))
