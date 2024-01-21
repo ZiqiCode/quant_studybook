@@ -123,6 +123,7 @@ def get_return1(df):
     X_0 = X[:-1].values.tolist()
     X_1 = X[1:].values.tolist()
     returnrate = [(X_1[i]-X_0[i])/X_0[i] for i in range(len(X_0))]
+    # returnrate = [np.log(X_1[i]/X_0[i]) for i in range(len(X_0))]
     df_new = df.drop(df.columns[[0]], axis = 1)
     df_new.loc['return1'] = returnrate
     return df_new
