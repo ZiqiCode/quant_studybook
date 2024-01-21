@@ -117,14 +117,14 @@ def get_return10(security, date):
 
 def get_return1(df):
     X = df.loc['close']
-    X_0 = X[:-1]
-    X_1 = X[1:]
-    returnrate = (X_1-X_0)/X_0
-    df_new = df.drop(df.colums[[0]], axis = 1)
+    X_0 = X[:-1].values.tolist()
+    print(X_0)
+    X_1 = X[1:].values.tolist()
+    returnrate = [(X_1[i]-X_0[i])/X_0[i] for i in range(len(X_0))]
+    print(returnrate)
+    df_new = df.drop(df.columns[[0]], axis = 1)
     df_new.loc['return1'] = returnrate
     return df_new
-
-
 
 
 #combine to form a matrix of 9*30
@@ -132,12 +132,12 @@ def combine930matrix(date):
     df = getfundamental(security,date)
     df2 = calculate_rateCM_30_days(security,date)
     df3 = get_turnover(security, date)
-    #df4 = get_return1(df)
 
     df['RateCM'] = df2['RateCM']
     df['turnover'] = pd.Series(df3).values
-    #df['return1'] = df4['return1']
-    return df.T
+    df = df.T
+    df = get_return1(df)
+    return df
 
 if __name__ == "__main__":
     count = get_query_count()
