@@ -14,7 +14,7 @@ security = '601127.XSHG'
 
 # 1-1 get fundamental data, 'open', 'close', 'low', 'high', 'volume','avg, return df of 30 days
 def getfundamental(security, date):
-    df = get_price(security, count = 30, end_date=date, frequency='daily',
+    df = get_price(security, count = 31, end_date=date, frequency='daily',
                fields=['open', 'close', 'low', 'high', 'volume', 'avg'],
                skip_paused=True, fq='none',  panel=False, fill_paused=True)
 
@@ -103,7 +103,7 @@ def calculate_rateCM_30_days(security, end_date):
 # 1-3 turn over ratio, return df of 30 days
 def get_turnover(security, date):
     query_filter = query(valuation.turnover_ratio).filter(valuation.code.in_([security]))
-    tr = get_fundamentals_continuously(query_filter, end_date=date, count=30, panel=False)['turnover_ratio']
+    tr = get_fundamentals_continuously(query_filter, end_date=date, count=31, panel=False)['turnover_ratio']
     return tr
 
 
