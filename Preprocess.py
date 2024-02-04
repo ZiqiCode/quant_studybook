@@ -109,10 +109,10 @@ def get_turnover(security, date):
 
 
 #get 10days return
-def get_return10(security, date):
-    a = get_price(security, count = 30, end_date=date, frequency='daily',
-               fields=['open', 'close', 'low', 'high', 'volume'],
-               skip_paused=True, fq='none',  panel=False, fill_paused=True)
+# def get_return10(security, date):
+#     a = get_price(security, count = 30, end_date=date, frequency='daily',
+#                fields=['open', 'close', 'low', 'high', 'volume'],
+#                skip_paused=True, fq='none',  panel=False, fill_paused=True)
 
 
 
@@ -142,20 +142,29 @@ def combine930matrix(date):
     return df
 
 #generate input matrix of 1 year
-def inputmatrix(date):
+def inputmatrix(date, count):
 
     # Get the trading days within the specified date range
-    trading_days = get_trade_days(end_date=date, count=200)
+    trading_days = get_trade_days(end_date=date, count=count)
     # Filter trading days with at least 2 days in between
     filtered_trading_days = [day for i, day in enumerate(trading_days[:-2]) if (trading_days[i + 2] - day).days >= 2]
     list_of_dfs = []
-    for j in filtered_trading_days:
-        list_of_dfs = list_of_dfs + [combine930matrix(j)]
-    return list_of_dfs
+    for day in filtered_trading_days:
+        list_of_dfs = list_of_dfs + [combine930matrix(day)]
+
+    date_rtn = get_trade_days(start_date=date, count=10)
+    close_p = get_price(security, count=count+10, end_date=date_rtn[-1],
+                        frequency='daily', fields=['close'], skip_paused=True, fq='none', panel=False, fill_paused=True)
+    close = close_p['close'].values.tolist()
+    list_of_rtn = [(close[i+10]-close[i])/close[i] for i in range(count)]
+
+    return list_of_dfs, list_of_rtn
 
 if __name__ == "__main__":
     count = get_query_count()
     print(count)
     print("HelloWorld!")
     #print(combine930matrix('2023-1-10'))
-    list_of_dfs = inputmatrix('2023-10-20')
+    list_of_dfs = inputmatrix('2023-10-20', 200)
+
+
